@@ -1,0 +1,30 @@
+{{- range .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  labels:
+    app: {{ .name }}
+spec:
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      serviceAccountName: {{ .name }}
+      containers:
+      - name: server
+        image: {{ .image }}
+        ports:
+        - containerPort: {{ .port }}
+        env:
+        {{- range .env }}
+        - name: {{ .name }}
+          value: "{{ .value }}"
+        {{- end }}
+{{- end }}
